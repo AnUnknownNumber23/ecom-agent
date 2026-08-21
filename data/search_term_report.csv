@@ -1,0 +1,6 @@
+campaign,ad_group,query,match_type,impressions,clicks,spend,sales,orders
+Camp-A,AG1,iphone case,EXACT,5000,200,80.00,0.00,0
+Camp-A,AG1,usb c cable,EXACT,2000,30,12.00,0.00,0
+Camp-A,AG1,wireless charger,BROAD,3000,50,25.00,120.00,6
+Camp-B,AG2,fast charging pad,PHRASE,4000,60,40.00,180.00,5
+Camp-B,AG2,magsafe charger,EXACT,500,8,5.00,0.00,0

@@ -1,0 +1,6 @@
+campaign,keyword,match_type,impressions,clicks,spend,sales,orders,bid
+Camp-A,iphone 15 case,EXACT,4000,150,120.00,150.00,2,0.90
+Camp-A,android case,EXACT,3000,100,60.00,0.00,0,0.70
+Camp-A,best charger,BROAD,2500,80,35.00,300.00,10,0.50
+Camp-B,usb hub,PHRASE,1500,20,15.00,40.00,1,0.75
+Camp-B,hdmi cable,EXACT,800,10,6.00,0.00,0,0.60

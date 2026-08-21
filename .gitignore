@@ -1,0 +1,18 @@
+# 密钥 —— 绝不提交
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 编辑器 / 系统
+.idea/
+.vscode/
+.DS_Store
+
+# Claude Code 本地设置
+.claude/settings.local.json
