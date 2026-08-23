@@ -9,6 +9,9 @@ __pycache__/
 .venv/
 venv/
 
+# 生成产物（操作清单等）
+output/
+
 # 编辑器 / 系统
 .idea/
 .vscode/

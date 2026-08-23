@@ -10,6 +10,8 @@
 - **D3（安全链第一层）**：工单状态机 + LLM 复核。候选必须走
   `pending → reviewed → approved → executing`，LLM 只审不造（approve/reject/modify），
   复核失败 = 安全失败（不放行）。
+- **D4（安全链第二层）**：人批 + 快照 + 回滚 + 熔断 + 执行（shadow mode，
+  只生成操作清单 CSV，不写 Amazon）。
 
 ```
 harness/
@@ -18,6 +20,8 @@ harness/
   loop.py       ReAct 循环
   workorder.py  工单状态机（pending→reviewed→approved→executing→done）
   review.py     LLM 复核（只审不造，复核失败即安全失败）
+  approval.py   人批（reviewed → approved/rejected）
+  executor.py   执行器（快照 + 回滚 + 熔断）
 amazon_ads/
   data.py       读报表 CSV 并归一化
   rules.py      规则引擎（纯函数，确定性）
@@ -26,6 +30,7 @@ data/           广告报表 mock 数据（搜索词/关键词/活动）
 main.py         D1 CLI 入口
 rules_cli.py    D2 规则引擎入口（python rules_cli.py）
 review_cli.py   D3 复核 + 工单入口（python review_cli.py）
+execute_cli.py  D4 全链路入口（python execute_cli.py --yes）
 ```
 
 ## 跑起来
@@ -46,7 +51,7 @@ python main.py
 - D1 最小循环 ✅
 - D2 广告报表 CSV + 确定性规则引擎 ✅
 - D3 工单状态机 + LLM 复核 ✅（护栏已内建于规则阈值 + 单步封顶）
-- D4 人批 + 快照 + 回滚 + 熔断
+- D4 人批 + 快照 + 回滚 + 熔断 + 执行（shadow mode）✅
 - D5 LangGraph 迁移（interrupt + checkpoint）
 - D6 上下文 + 记忆
 - D7 抽象 DomainPack 接口 + 换领域验收
