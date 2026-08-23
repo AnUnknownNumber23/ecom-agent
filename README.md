@@ -12,6 +12,10 @@
   复核失败 = 安全失败（不放行）。
 - **D4（安全链第二层）**：人批 + 快照 + 回滚 + 熔断 + 执行（shadow mode，
   只生成操作清单 CSV，不写 Amazon）。
+- **D5（LangGraph 编排）**：把 D3/D4 的 review→approve→execute 迁到状态图。
+  approve 节点用 `interrupt()` 暂停人批，checkpoint 落 SQLite，可跨进程恢复
+  （第一进程暂停打印 thread_id，第二进程 `--resume` 续跑，不重跑复核），
+  也支持 `--rewind` 回退到人批那一步重新批准（time travel）。
 
 ```
 harness/
@@ -22,6 +26,7 @@ harness/
   review.py     LLM 复核（只审不造，复核失败即安全失败）
   approval.py   人批（reviewed → approved/rejected）
   executor.py   执行器（快照 + 回滚 + 熔断）
+  graph.py      LangGraph 编排（review→approve→execute + interrupt + checkpoint）
 amazon_ads/
   data.py       读报表 CSV 并归一化
   rules.py      规则引擎（纯函数，确定性）
@@ -31,6 +36,7 @@ main.py         D1 CLI 入口
 rules_cli.py    D2 规则引擎入口（python rules_cli.py）
 review_cli.py   D3 复核 + 工单入口（python review_cli.py）
 execute_cli.py  D4 全链路入口（python execute_cli.py --yes）
+graph_cli.py    D5 编排入口（run / --yes / --list / --resume <id> / --rewind <id>）
 ```
 
 ## 跑起来
@@ -46,12 +52,20 @@ python main.py
 - `现在几点` → 模型调 `get_time`
 - `帮我算 3.5 加 4.2` → 模型调 `add`
 
+D5 编排（LangGraph）：
+
+- `python graph_cli.py` → 跑到人批暂停，打印 thread_id 后退出（非阻塞）
+- `python graph_cli.py --resume <thread_id> --yes` → 跨进程续跑并写 CSV
+- `python graph_cli.py --rewind <thread_id> [--yes]` → 回退到人批那一步，重新批准
+- `python graph_cli.py --list` → 列出所有 thread_id 及其状态（等待人批 / 已完成）
+- `python graph_cli.py --yes` → 一条龙：跑 + 自动批准全部 + 写 CSV
+
 ## 路线图
 
 - D1 最小循环 ✅
 - D2 广告报表 CSV + 确定性规则引擎 ✅
 - D3 工单状态机 + LLM 复核 ✅（护栏已内建于规则阈值 + 单步封顶）
 - D4 人批 + 快照 + 回滚 + 熔断 + 执行（shadow mode）✅
-- D5 LangGraph 迁移（interrupt + checkpoint）
+- D5 LangGraph 迁移（interrupt + checkpoint）✅
 - D6 上下文 + 记忆
 - D7 抽象 DomainPack 接口 + 换领域验收
